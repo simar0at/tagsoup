@@ -44,10 +44,9 @@ public class SAXParserImpl
     {
         SAXParserImpl parser = new SAXParserImpl();
         if (features != null) {
-            Iterator it = features.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry entry = (Map.Entry) it.next();
-                parser.setFeature((String) entry.getKey(), ((Boolean) entry.getValue()).booleanValue());
+            for (Object o : features.entrySet()) {
+                Map.Entry entry = (Map.Entry) o;
+                parser.setFeature((String) entry.getKey(), (Boolean) entry.getValue());
             }
         }
         return parser;

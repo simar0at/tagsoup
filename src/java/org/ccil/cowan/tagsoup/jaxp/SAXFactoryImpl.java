@@ -47,7 +47,7 @@ public class SAXFactoryImpl
      * Note that we wouldn't need this map if we could create instances
      * directly using the prototype instance.
      */
-    private HashMap features = null;
+    private HashMap<String, Boolean> features = null;
 
     public SAXFactoryImpl()
     {
@@ -86,7 +86,7 @@ public class SAXFactoryImpl
         // If not, exception was thrown: so we are good now:
         if (features == null) {
             // Let's retain the ordering as well
-            features = new LinkedHashMap();
+            features = new LinkedHashMap<String, Boolean>();
         }
         features.put(name, value ? Boolean.TRUE : Boolean.FALSE);
     }
