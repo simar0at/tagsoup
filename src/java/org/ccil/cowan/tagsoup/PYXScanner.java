@@ -57,7 +57,6 @@ public class PYXScanner implements Scanner {
 			case '(':
 				if (instag) {
 					h.stagc(buff, 0, 0);
-					instag = false;
 					}
 				h.gi(buff, 1, size - 1);
 				instag = true;

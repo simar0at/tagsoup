@@ -29,7 +29,6 @@ public class PYXWriter
 	implements ScanHandler, ContentHandler, LexicalHandler {
 
 	private PrintWriter theWriter;		// where we write to
-	private static char[] dummy = new char[1];
 	private String attrName;		// saved attribute name
 
 	// ScanHandler implementation

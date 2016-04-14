@@ -34,10 +34,10 @@ public abstract class Schema {
 	public static final int F_CDATA = 2;
 	public static final int F_NOFORCE = 4;
 
-	private HashMap theEntities = 
-		new HashMap();		// String -> Character
-	private HashMap theElementTypes = 
-		new HashMap();		// String -> ElementType
+	private HashMap<String, Integer> theEntities =
+		new HashMap<String, Integer>();		// String -> Character
+	private HashMap<String, ElementType> theElementTypes =
+		new HashMap<String, ElementType>();		// String -> ElementType
 
 	private String theURI = "";
 	private String thePrefix = "";
@@ -109,7 +109,7 @@ public abstract class Schema {
 	**/
 
 	public void entity(String name, int value) {
-		theEntities.put(name, new Integer(value));
+		theEntities.put(name, value);
 		}
 
 	/**
@@ -132,7 +132,7 @@ public abstract class Schema {
 //		System.err.println("%% Looking up entity " + name);
 		Integer ch = (Integer)theEntities.get(name);
 		if (ch == null) return 0;
-		return ch.intValue();
+		return ch;
 		}
 
 	/**

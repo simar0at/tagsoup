@@ -18,10 +18,7 @@ package org.ccil.cowan.tagsoup;
 import java.util.Hashtable;
 import java.util.Enumeration;
 import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
 import org.xml.sax.*;
-import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.ext.LexicalHandler;
 
 
@@ -30,7 +27,7 @@ The stand-alone TagSoup program.
 **/
 public class CommandLine {
 
-	static Hashtable options = new Hashtable(); static {
+	static Hashtable<String, Object> options = new Hashtable<String, Object>(); static {
 		options.put("--nocdata", Boolean.FALSE); // CDATA elements are normal
 		options.put("--files", Boolean.FALSE);	// process arguments as separate files
 		options.put("--reuse", Boolean.FALSE);	// reuse a single Parser
@@ -119,7 +116,7 @@ public class CommandLine {
 	}
 
 	private static Parser theParser = null;
-	private static HTMLSchema theSchema = null;
+	private static org.ccil.cowan.tagsoup.HTMLSchema theSchema = null;
 	private static String theOutputEncoding = null;
 
 	// Process one source onto an output stream.
@@ -134,7 +131,7 @@ public class CommandLine {
 		else {
 			r = new Parser();
 			}
-		theSchema = new HTMLSchema();
+		theSchema = new org.ccil.cowan.tagsoup.HTMLSchema();
 		r.setProperty(Parser.schemaProperty, theSchema);
 
 		if (hasOption(options, "--nocdata")) {
@@ -192,7 +189,7 @@ public class CommandLine {
 			r.setProperty(Parser.lexicalHandlerProperty, h);
 			}
 		InputSource s = new InputSource();
-		if (src != "") {
+		if (!src.equals("")) {
 			s.setSystemId(src);
 			}
 		else {
@@ -253,7 +250,7 @@ public class CommandLine {
 
 	// Options processing
 
-	private static int getopts(Hashtable options, String[] argv) {
+	private static int getopts(Hashtable<String, Object> options, String[] argv) {
 		int optind;
 		for (optind = 0; optind < argv.length; optind++) {
 			String arg = argv[optind];

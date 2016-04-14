@@ -278,7 +278,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	// the corresponding instance variables, but care must be taken
 	// to keep them in sync.
 
-	private HashMap theFeatures = new HashMap();
+	private HashMap<String, Boolean> theFeatures = new HashMap<String, Boolean>();
 	{
 		theFeatures.put(namespacesFeature, truthValue(DEFAULT_NAMESPACES));
 		theFeatures.put(namespacePrefixesFeature, Boolean.FALSE);
@@ -315,16 +315,16 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 	public boolean getFeature (String name)
 		throws SAXNotRecognizedException, SAXNotSupportedException {
-		Boolean b = (Boolean)theFeatures.get(name);
+		Boolean b = theFeatures.get(name);
 		if (b == null) {
 			throw new SAXNotRecognizedException("Unknown feature " + name);
 			}
-		return b.booleanValue();
+		return b;
 		}
 
 	public void setFeature (String name, boolean value)
 	throws SAXNotRecognizedException, SAXNotSupportedException {
-		Boolean b = (Boolean)theFeatures.get(name);
+		Boolean b = theFeatures.get(name);
 		if (b == null) {
 			throw new SAXNotRecognizedException("Unknown feature " + name);
 			}
@@ -455,14 +455,10 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 	// Sets up instance variables that haven't been set by setFeature
 	private void setup() {
-		if (theSchema == null) theSchema = new HTMLSchema();
-		if (theScanner == null) theScanner = new HTMLScanner();
+		if (theSchema == null) theSchema = new org.ccil.cowan.tagsoup.HTMLSchema();
+		if (theScanner == null) theScanner = new org.ccil.cowan.tagsoup.HTMLScanner();
 		if (theAutoDetector == null) {
-			theAutoDetector = new AutoDetector() {
-				public Reader autoDetectingReader(InputStream i) {
-					return new InputStreamReader(i);
-					}
-				};
+			theAutoDetector = new InputStreamReaderAutoDetector();
 			}
 		theStack = new Element(theSchema.getElementType("<root>"), defaultAttributes);
 		thePCDATA = new Element(theSchema.getElementType("<pcdata>"), defaultAttributes);
@@ -872,7 +868,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 	// If the String is quoted, trim the quotes.
 	private static String trimquotes(String in) {
-		if (in == null) return in;
+		if (in == null) return null;
 		int length = in.length();
 		if (length == 0) return in;
 		char s = in.charAt(0);
@@ -891,7 +887,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 			return new String[0];
 			}
 		else {
-			ArrayList l = new ArrayList();
+			ArrayList<String> l = new ArrayList<String>();
 			int s = 0;
 			int e = 0;
 			boolean sq = false;	// single quote
@@ -920,7 +916,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 			lastc = c;
 			}
 		l.add(val.substring(s, e));
-		return (String[])l.toArray(new String[0]);
+		return l.toArray(new String[l.size()]);
 		}
         }
 
@@ -931,7 +927,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	private String cleanPublicid(String src) {
 		if (src == null) return null;
 		int len = src.length();
-		StringBuffer dst = new StringBuffer(len);
+		StringBuilder dst = new StringBuilder(len);
 		boolean suppressSpace = true;
 		for (int i = 0; i < len; i++) {
 			char ch = src.charAt(i);
@@ -955,13 +951,12 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	public void gi(char[] buff, int offset, int length) throws SAXException {
 		if (theNewElement != null) return;
 		String name = makeName(buff, offset, length);
-		if (name == null) return;
 		ElementType type = theSchema.getElementType(name);
 		if (type == null) {
 			// Suppress unknown elements if ignore-bogons is on
 			if (ignoreBogons) return;
 			int bogonModel = bogonsEmpty ? Schema.M_EMPTY : Schema.M_ANY;
-			int bogonMemberOf = rootBogons ? Schema.M_ANY : (Schema.M_ANY & ~ Schema.M_ROOT);
+			int bogonMemberOf = rootBogons ? Schema.M_ANY : (~Schema.M_ROOT);
 			theSchema.elementType(name, bogonModel, bogonMemberOf, 0);
 			if (!rootBogons) theSchema.parent(name, theSchema.rootElementType().name());
 			type = theSchema.getElementType(name);
@@ -1073,7 +1068,7 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 	// This no longer lowercases the result: we depend on Schema to
 	// canonicalize case.
 	private String makeName(char[] buff, int offset, int length) {
-		StringBuffer dst = new StringBuffer(length + 2);
+		StringBuilder dst = new StringBuilder(length + 2);
 		boolean seenColon = false;
 		boolean start = true;
 //		String src = new String(buff, offset, length); // DEBUG

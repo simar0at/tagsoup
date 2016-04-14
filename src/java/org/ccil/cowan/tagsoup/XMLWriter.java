@@ -328,9 +328,9 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
     {
         setOutput(writer);
         nsSupport = new NamespaceSupport();
-        prefixTable = new Hashtable();
-        forcedDeclTable = new Hashtable();
-        doneDeclTable = new Hashtable();
+        prefixTable = new Hashtable<String, String>();
+        forcedDeclTable = new Hashtable<String, Boolean>();
+        doneDeclTable = new Hashtable<String, String>();
         outputProperties = new Properties();
     }
 
@@ -436,7 +436,7 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      */
     public String getPrefix (String uri)
     {
-        return (String)prefixTable.get(uri);
+        return prefixTable.get(uri);
     }
     
 
@@ -511,7 +511,7 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
                 write(version);
                 write("\"");
             }
-            if (outputEncoding != null && outputEncoding != "") {
+            if (outputEncoding != null && !outputEncoding.equals("")) {
                 write(" encoding=\"");
                 write(outputEncoding);
                 write("\"");
@@ -1031,9 +1031,9 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
      */
     private void forceNSDecls ()
     {
-        Enumeration prefixes = forcedDeclTable.keys();
+        Enumeration<String> prefixes = forcedDeclTable.keys();
         while (prefixes.hasMoreElements()) {
-            String prefix = (String)prefixes.nextElement();
+            String prefix = prefixes.nextElement();
             doPrefix(prefix, null, true);
         }
     }
@@ -1069,14 +1069,14 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
         if (prefix != null) {
             return prefix;
         }
-        prefix = (String) doneDeclTable.get(uri);
+        prefix = doneDeclTable.get(uri);
         if (prefix != null &&
             ((!isElement || defaultNS != null) &&
              "".equals(prefix) || nsSupport.getURI(prefix) != null)) {
             prefix = null;
         }
         if (prefix == null) {
-            prefix = (String) prefixTable.get(uri);
+            prefix = prefixTable.get(uri);
             if (prefix != null &&
                 ((!isElement || defaultNS != null) &&
                  "".equals(prefix) || nsSupport.getURI(prefix) != null)) {
@@ -1183,9 +1183,9 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
             if (i != -1) name = qName.substring(i + 1, qName.length());
         }
         if (!name.equals(value)) return false;
-        for (int j = 0; j < booleans.length; j++) {
-            if (name.equals(booleans[j])) return true;
-            }
+        for (String aBoolean : booleans) {
+            if (name.equals(aBoolean)) return true;
+        }
         return false;
     }
 
@@ -1408,9 +1408,9 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
     // Internal state.
     ////////////////////////////////////////////////////////////////////
 
-    private Hashtable prefixTable;
-    private Hashtable forcedDeclTable;
-    private Hashtable doneDeclTable;
+    private Hashtable<String, String> prefixTable;
+    private Hashtable<String, Boolean> forcedDeclTable;
+    private Hashtable<String, String> doneDeclTable;
     private int elementLevel = 0;
     private Writer output;
     private NamespaceSupport nsSupport;
