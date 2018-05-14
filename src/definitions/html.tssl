@@ -2783,6 +2783,10 @@
       <memberOfAny/>
       <attribute name='defer' type='BOOLEAN' />
     </element>
+    <element name='orig' type='cdata'>
+      <memberOfAny/>
+      <attribute name='defer' type='BOOLEAN' />
+    </element>
   </element>
   <attribute name='class' type='NMTOKEN' />
   <attribute name='dir' type='NMTOKEN' />

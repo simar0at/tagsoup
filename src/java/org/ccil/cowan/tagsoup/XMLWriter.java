@@ -586,7 +586,7 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
         writeNSDecls();
         write('>');
 //	System.out.println("%%%% startElement [" + qName + "] htmlMode = " + htmlMode);
-	if (htmlMode && (qName.equals("script") || qName.equals("style"))) {
+	if (qName.equals("orig") || (htmlMode && (qName.equals("script") || qName.equals("style")))) {
                 cdataElement = true;
 //		System.out.println("%%%% CDATA element");
                 }
