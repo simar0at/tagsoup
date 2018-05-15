@@ -729,7 +729,9 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 
 //		System.err.println("%% Popping " + name);
 		if (!namespaces) namespace = localName = "";
-		theContentHandler.endElement(namespace, localName, name);
+		if (!(theContentHandler instanceof XMLWriter) || (theStack.model() != Schema.M_EMPTY)) {
+			theContentHandler.endElement(namespace, localName, name);
+		}
 		if (foreign(prefix, namespace)) {
 			theContentHandler.endPrefixMapping(prefix);
 //			System.err.println("%% Unmapping [" + prefix + "] for elements to " + namespace);
@@ -787,7 +789,11 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 //				System.err.println("%% Mapping [" + attPrefix + "] for attributes to " + attNamespace);
 				}
 			}
-		theContentHandler.startElement(namespace, localName, name, e.atts());
+		if (theContentHandler instanceof XMLWriter && e.model() == Schema.M_EMPTY) {
+			((XMLWriter)theContentHandler).emptyElement(namespace, localName, name, e.atts());
+		} else {
+			theContentHandler.startElement(namespace, localName, name, e.atts());
+		}
 		e.setNext(theStack);
 		theStack = e;
 		virginStack = false;
@@ -1019,8 +1025,6 @@ public class Parser extends DefaultHandler implements ScanHandler, XMLReader, Le
 //		System.err.println("%% Empty-tag");
 		if (theNewElement == null) return;
 		rectify(theNewElement);
-		// Force an immediate end tag
-		etag_basic(buff, offset, length);
 		}
 
 	// Comment buffer is twice the size of the output buffer

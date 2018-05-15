@@ -2252,6 +2252,10 @@
         <memberOf group='M_NOLINK'/>
         <attribute name='clear' default='none'/>
       </element>
+      <element name='g' type='empty'>
+        <memberOf group='M_INLINE'/>
+        <memberOf group='M_NOLINK'/>
+      </element>
       <element name='canvas' type='mixed'>
         <memberOf group='M_INLINE'/>
         <memberOf group='M_NOLINK'/>
