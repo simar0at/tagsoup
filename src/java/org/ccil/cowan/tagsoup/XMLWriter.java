@@ -1213,7 +1213,11 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler
                 write("&lt;");
                 break;
             case '>':
-                write("&gt;");
+                if (isAttVal) {
+                    write("&gt;");
+                } else {
+                    write('>');
+                }
                 break;
             case '\"':
                 if (isAttVal) {
